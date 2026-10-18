@@ -1,10 +1,12 @@
 package de.herlue.tuma.parse;
 
-class Scanner {
+import java.util.Arrays;
+
+class Lexer {
   private Position position;
   private char[] line;
 
-  Scanner() {
+  Lexer() {
     position = new Position();
   }
 
@@ -43,7 +45,7 @@ class Scanner {
     Position start = Position.of(position);
     
     if ('\0' == currentChar)
-      return new Token(TokenType.END, makeSpan(start));
+      return new Token(TokenType.END, makeSpan(start), null);
 
     getNextChar();
     TokenType type;
@@ -68,17 +70,17 @@ class Scanner {
 
         if (type != TokenType.SYMBOL) {
           getNextChar();
-          return new Token(type, makeSpan(start));
+          return makeToken(type, start);
         }
       }
 
-      while (isSymbol(currentChar))
-        currentChar = getNextChar();
+      while (isSymbol(getCurrentChar()))
+        getNextChar();
 
       if (position.getColumn() - start.getColumn() > 1)
         type = TokenType.STRING;
 
-      return new Token(type, makeSpan(start));
+      return makeToken(type, start);
     }
 
     switch (currentChar) {
@@ -105,19 +107,23 @@ class Scanner {
         }
         break;
       default:
-        type = TOKEN_ERROR;
+        type = TokenType.ERROR;
     }
 
-    return new Token(type, makeSpan(start));
+    return makeToken(type, start);
   }
 
   Span makeSpan(Position start) {
     return new Span(start, Position.of(position));
   }
 
+  Token makeToken(TokenType type, Position start) {
+    char[] lexeme = Arrays.copyOfRange(line, start.getColumn(), position.getColumn());
+    return new Token(type, makeSpan(start), String.valueOf(lexeme));
+  }
+
   // todo: maybe move to utils
   static boolean isSymbol(char c) {
     return Character.isLetterOrDigit(c) || c == '_';
-  } 
+  }
 }
-

@@ -18,10 +18,12 @@ enum TokenType {
 class Token {
   private TokenType type;
   private Span span;
+  private String lexeme;
 
-  Token(TokenType type, Span span) {
+  Token(TokenType type, Span span, String lexeme) {
     this.type = type;
     this.span = span;
+    this.lexeme = lexeme;
   }
 
   TokenType getType() {
@@ -30,5 +32,9 @@ class Token {
 
   Span getSpan() {
     return span;
+  }
+
+  String getLexeme() {
+    return lexeme;
   }
 }

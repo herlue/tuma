@@ -38,12 +38,12 @@ public class Machine {
   //   addTransition(new TransitionKey(state, symbol), transition);
   // }
 
-  public void printTape() {
+  public StringBuilder printTape() {
     StringBuilder sb = new StringBuilder();
     for (int offset = -5; offset <= 5; offset++)
       sb.append(tape.read(offset));
-    sb.append("\n     ^");
-    System.out.println(sb);
+    
+    return sb;
   }
 
   public boolean simulate(String word) {
@@ -65,7 +65,9 @@ public class Machine {
       tape.write(transition.writeSymbol());
       tape.move(transition.movement());
 
-      printTape();
+      StringBuilder sb = printTape();
+      sb.append(String.format("\t%s\n     ^\n", transition));
+      System.out.print(sb);
 
       new Scanner(System.in).nextLine(); // press enter to see next transition
     }
